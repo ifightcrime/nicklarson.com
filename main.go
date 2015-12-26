@@ -2,21 +2,28 @@ package main
 
 import (
   "github.com/codegangsta/negroni"
+
   "net/http"
   //"fmt"
   "html/template"
 )
 
 func main() {
-  mux := http.NewServeMux()
+  router := http.NewServeMux()
 
-  mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+  router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
     //fmt.Fprintf(w, "Hello world!")
+
+    if (r.URL.Path != "/") {
+        http.NotFound(w, r)
+        return
+    }
+
     t, _ := template.ParseFiles("templates/home.tmpl")
     t.Execute(w, nil)
   })
 
   n := negroni.Classic()
-  n.UseHandler(mux)
+  n.UseHandler(router)
   n.Run(":8001")
 }
